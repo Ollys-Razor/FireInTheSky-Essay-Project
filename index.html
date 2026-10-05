@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <style>
-        *, *::before, *::after {
-        box-sizing: border-box;
-                                }
     html, body {
         margin: 0 !important;
         padding: 0 !important;
@@ -60,12 +56,10 @@
 
     p {
         color: white;
-        font-size: 1rem;
     }
 
     blockquote {
         color: antiquewhite;
-        font-size: 1.5rem;
     }
 </style>
     <meta charset="utf-8">
@@ -98,8 +92,7 @@
 
     const bgMusic = new Audio(url("https://github.com/Ollys-Razor/FireInTheSky-Essay-Project/blob/main/classic-radio-static-SBA-300282299.mp3"));
     bgMusic.loop = true;
-    bgMusic.volume = 0.5;
-      
+
     startButton.addEventListener("click", function() {
         bgMusic.play().catch(function(error) {
         console.error("Audio playback failed:", error);
