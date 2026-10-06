@@ -90,7 +90,7 @@
 <p>I listened to that song several times before I looked up, returning to the room around me. It did not cure me of my malaise, but it gave me something to aspire to. Perhaps the song is only so great for someone like me, who already cared deeply about spaceflight, who grew up with astronauts as my heroes. But for me at that moment, the words of the song seared themselves into my mind. They echo there still, and likely will for decades to come.</p>
 <p>"Fire in the sky" helped inspire a great collective hope in me. Where my old individualistic hope had made optimism for my own life hard, given  the likely death toll of the coming decades, this hope lets me set aside my fear of my own future, in favor of a commitment and faith in the future of all humanity. I hear a message in this song that is not written in its lyrics. Maybe you can hear it as well: Have hope and have pride, for you are human, and as long as you have each other and a commitment to great goals, any struggle can be overcome. It is in such struggles that we are our most human. It is better to die like Icarus, reaching for the sun, than to live in fear of the minotaur. </p>
 </div>
-    <script>
+<script>
   document.addEventListener("DOMContentLoaded", function() {
     const startButton = document.getElementById("start-btn");
     const overlay = document.getElementById("start-overlay");
@@ -100,18 +100,92 @@
     bgMusic.loop = true;
     bgMusic.volume = 0.5;
 
+    // 1. Assign audio source paths to each blockquote (in order)
+    const audioSources = [
+      "audio/gagarin.mp3",
+      "audio/apollo.mp3",
+      "audio/challenger.mp3",
+      "audio/glory.mp3"
+    ];
+
+    const blockquotes = document.querySelectorAll("blockquote");
+
+    // Attach audio objects and tracking properties to each blockquote element
+    blockquotes.forEach((bq, index) => {
+      if (audioSources[index]) {
+        bq.audio = new Audio(audioSources[index]);
+        bq.audio.volume = 0;
+        bq.fadeInterval = null;
+      }
+    });
+
+    // Smoothly fade audio volume in or out
+    function fadeAudio(audioEl, targetVolume, duration = 1000) {
+      if (!audioEl) return;
+      
+      // Clear any ongoing fade for this specific audio track
+      if (audioEl.fadeAnimation) {
+        cancelAnimationFrame(audioEl.fadeAnimation);
+      }
+
+      const startVolume = audioEl.volume;
+      const volumeChange = targetVolume - startVolume;
+      const startTime = performance.now();
+
+      if (targetVolume > 0 && audioEl.paused) {
+        audioEl.play().catch(err => console.error("Playback prevented:", err));
+      }
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        audioEl.volume = Math.max(0, Math.min(1, startVolume + volumeChange * progress));
+
+        if (progress < 1) {
+          audioEl.fadeAnimation = requestAnimationFrame(step);
+        } else if (targetVolume === 0) {
+          audioEl.pause(); // Pause when completely faded out to save resources
+        }
+      }
+
+      audioEl.fadeAnimation = requestAnimationFrame(step);
+    }
+
+    // Setup Intersection Observer
+    const observerOptions = {
+      root: null, // Default is browser viewport
+      threshold: 1.0 // 1.0 means the entire element must be in the viewport
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const bq = entry.target;
+        if (!bq.audio) return;
+
+        if (entry.isIntersecting) {
+          
+          fadeAudio(bq.audio, 1.0, 1000);
+        } else {
+          fadeAudio(bq.audio, 0.0, 1000);
+        }
+      });
+    }, observerOptions);
+
     startButton.addEventListener("click", function() {
-        bgMusic.play().catch(function(error) {
+      bgMusic.play().catch(function(error) {
         console.error("Audio playback failed:", error);
       });
         
       content.style.display = "block";
       overlay.style.display = "none";
+
+      // Start observing blockquotes AFTER the main content is made visible
+      blockquotes.forEach(bq => observer.observe(bq));
     });
   });
 </script>
-    <script>
-    </script>
+
 
 
 
