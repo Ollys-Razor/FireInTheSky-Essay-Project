@@ -98,7 +98,7 @@
 
     const bgMusic = new Audio("classic-radio-static-SBA-300282299.mp3");
     bgMusic.loop = true;
-    bgMusic.volume = 0.5;
+    bgMusic.volume = 0.25;
 
     // 1. Assign audio source paths to each blockquote (in order)
     const audioSources = [
@@ -155,7 +155,7 @@
     // Setup Intersection Observer
     const observerOptions = {
       root: null, 
-      threshold: 0.6 
+      threshold: 0.2 
     };
 
     const observer = new IntersectionObserver((entries) => {
